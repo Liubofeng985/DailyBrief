@@ -1,5 +1,5 @@
 import { jsonrepair } from "jsonrepair";
-import { runClaudeCli } from "./claude-cli";
+import { runLlm } from "./llm";
 import type { CryptoGlobalStats } from "../trading/coingecko";
 import type { FearGreedSnapshot } from "../trading/fear-greed";
 import type { TickerAnalysis } from "../trading/signals";
@@ -145,7 +145,7 @@ async function callOnce(
   userPrompt: string,
   fallback: TradingCommentary,
 ): Promise<TradingCommentary> {
-  const { text } = await runClaudeCli({
+  const { text } = await runLlm({
     systemPrompt: SYSTEM_PROMPT,
     userPrompt,
     timeoutMs: 240_000,

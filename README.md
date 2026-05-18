@@ -13,16 +13,18 @@
 ## 设计要点
 
 - **本地驱动**：系统自带调度器触发（Windows Task Scheduler / macOS launchd / Linux cron），不依赖任何云服务
-- **零 API key**：所有数据源走免费公开端点（RSS / 公开 JSON）；LLM 调用走本地登录的 [claude CLI](https://github.com/anthropics/claude-code)，扣 **Max 订阅额度**而非按 token 计费
+- **数据源零 API key**：所有数据源走免费公开端点（RSS / 公开 JSON）
+- **LLM 后端可插拔**：默认走本地 [claude CLI](https://github.com/anthropics/claude-code) 扣 **Max 订阅额度**；也可一行配置切到 Anthropic / OpenAI / DeepSeek / MiniMax 任一 API（按 token 计费）—— 见 [LLM 后端配置](#llm-后端配置)
 - **错误隔离**：单源失败不阻断全流程，单次 LLM 失败有 1-shot 重试 + 兜底渲染
-- **可观测**：每次任务运行写 `logs/daily-<日期>.log`，每次 LLM 调用写 `logs/claude-calls.jsonl`，`npm run quota-report` 查 Max 5h 滚动窗口热度
+- **可观测**：每次任务运行写 `logs/daily-<日期>.log`，每次 LLM 调用写 `logs/llm-calls.jsonl`，`npm run quota-report` 按 backend 汇总热度
 
 ## 前置要求
 
 - **Node.js 20+** + **npm**
 - **Windows 10/11** / **macOS 12+** / **Linux**（任一平台都支持，定时机制自动适配）
-- **Claude Code CLI** 已登录（[安装指南](https://docs.claude.com/en/docs/claude-code/quickstart)）
-  - Max 订阅最划算；用 API key 也行（成本约 $0.5-2/天）
+- **一个能跑的 LLM**：
+  - 默认方案：[Claude Code CLI](https://docs.claude.com/en/docs/claude-code/quickstart) 已登录（Max 订阅最划算）
+  - 或：Anthropic / OpenAI / DeepSeek / MiniMax 任一家的 API key（详见 [LLM 后端配置](#llm-后端配置)）
 - **git**
 
 ## 给 AI Agent 一句话装
@@ -34,11 +36,11 @@
 
 Agent 会自动 `git clone` → `npm install` → 注册系统调度器 → 链接全局 skill → 跑一次 `npm run dry-run` 烟测。完成后任意目录打开 Claude Code 都能用 `/run-daily`、`/check-daily`，描述问题（"日报又挂了"）也能触发 `daily-brief` skill 自动加载。
 
-> ⚠️ Agent 替不了 **claude CLI 的 OAuth 登录**（必须本人在浏览器点同意）。如果还没登录过，先跑一次：
+> ⚠️ 默认使用 **claude CLI** 跑 LLM（扣 Max 订阅而非 token）。Agent 替不了它的 OAuth 登录（必须本人在浏览器点同意）。如果还没登录过，先跑一次：
 > ```bash
 > echo "hi" | claude --print --model sonnet
 > ```
-> 会引导你登录，登录一次永久生效。
+> 会引导你登录，登录一次永久生效。**没有 Max 订阅的用户**可以改用 OpenAI / Anthropic / DeepSeek / MiniMax API，见 [LLM 后端配置](#llm-后端配置)。
 
 ## 一键安装（自己跑）
 
@@ -75,8 +77,11 @@ git clone https://github.com/leiting-eric/DailyBrief.git
 cd DailyBrief
 npm install
 
-# 2. 验证 claude CLI（如果没登录会引导你登录）
+# 2. 配置 LLM 后端
+#    默认 claude CLI（如果没登录会引导你登录）：
 echo "say hi in Chinese" | claude --print --model sonnet
+#    或用其他 backend：cp .env.example .env.local 编辑 LLM_BACKEND 和对应 API key
+#    详见下文 LLM 后端配置 章节
 
 # 3. 注册定时 + 启用全局 skill
 node scripts/install.mjs --global
@@ -104,7 +109,40 @@ node scripts/install.mjs --global
 | `npm run regen-trading [date]` | 重做交易部分 | ~2 min |
 | `npm run regen-enrich <cat:sub> [date]` | 补缺失的中文摘要 | ~30s |
 | `npm run open` | 在 Chrome 打开今日报告 | 即时 |
-| `npm run quota-report` | 看 Sonnet 配额近况 | 即时 |
+| `npm run quota-report` | 看各 LLM backend 用量统计 | 即时 |
+
+## LLM 后端配置
+
+项目通过 `LLM_BACKEND` 环境变量切换后端。**默认 `claude-cli`**（不设环境变量也是它），所以登录过 Claude Code 的用户开箱即用。
+
+把 `.env.example` 复制成 `.env.local`（已经 gitignored），按 backend 解开对应几行：
+
+| backend | API key 环境变量 | 默认 model | base URL |
+|---|---|---|---|
+| `claude-cli` （默认）| 不需要，复用 Claude Code OAuth | `sonnet` | — |
+| `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` | `api.anthropic.com` |
+| `openai` | `OPENAI_API_KEY` | `gpt-4o-mini` | `api.openai.com/v1` |
+| `deepseek` | `DEEPSEEK_API_KEY` | `deepseek-v4-flash` | `api.deepseek.com/v1` |
+| `minimax` | `MINIMAX_API_KEY` | `MiniMax-M2.7` | `api.minimax.io/v1` <sup>1</sup> |
+
+<sup>1</sup> 中国大陆访问设 `MINIMAX_BASE_URL=https://api.minimaxi.com/v1`。
+
+通用覆盖项：
+- `LLM_MODEL=<id>` — 任意 backend 的 model 都能用这个变量覆盖默认（如 `LLM_MODEL=gpt-4o` 走 openai 的更大模型）
+- `<BACKEND>_BASE_URL` — 走自托管代理 / 兼容服务（如 LM Studio / Ollama 跑 OpenAI 兼容接口 → `LLM_BACKEND=openai` + `OPENAI_BASE_URL=http://localhost:1234/v1`）
+
+### 怎么选
+
+| 你的情况 | 推荐 backend |
+|---|---|
+| 已经订了 Claude Max（**Max 5h 滚动窗口够用，不想额外付钱**） | `claude-cli` |
+| 没 Max，只想跑日报，预算 ~$0.5/天 | `openai` 配 `gpt-4o-mini` 或 `deepseek` 配 `deepseek-v4-flash`（更便宜） |
+| 中文摘要质量优先，预算可放宽 | `anthropic` 配 `claude-sonnet-4-6`（API 计费） |
+| 国内网络访问，要规避 GFW | `deepseek` 或 `minimax`（都是国内厂商） |
+
+### 切 backend 不需要改代码
+
+所有 prompt 都已经在 `lib/ai/prompts.ts` 抽离，跟 backend 无关；JSON 错误兜底（`jsonrepair`）也是 backend-agnostic。切完 backend 后跑一次 `npm run daily`，进 `logs/llm-calls.jsonl` 看新 backend 的调用记录。
 
 ## Claude Code 集成
 
@@ -124,7 +162,7 @@ node scripts/install.mjs --global
 daily-brief/
 ├── lib/
 │   ├── sources/        # RSS / API / curl 抓取器；新加源在这里
-│   ├── ai/             # claude CLI 调用 + Sonnet 提示词
+│   ├── ai/             # 可插拔 LLM 后端 + 提示词（lib/ai/backends/ 下每个 backend）
 │   ├── trading/        # Yahoo Finance + 技术指标
 │   └── output/         # 渲染层 (HTML / Markdown)
 ├── scripts/

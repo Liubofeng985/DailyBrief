@@ -1,5 +1,5 @@
 import { jsonrepair } from "jsonrepair";
-import { CLAUDE_MODEL, runClaudeCli } from "./claude-cli";
+import { getModelTag, runLlm } from "./llm";
 import { SYSTEM_PROMPT_DIGEST } from "./prompts";
 import type { Category, RawArticle } from "../sources/types";
 
@@ -97,7 +97,8 @@ function selectRoundRobin(
   return out;
 }
 
-export const MODEL_TAG = `claude-${CLAUDE_MODEL}`;
+/** @deprecated import `getModelTag` directly from "./llm" for lazy evaluation. */
+export const MODEL_TAG = getModelTag();
 
 // claude CLI has no JSON mode. The system prompt forbids markdown fences,
 // but a small fraction of responses still wraps the payload in ```json … ```
@@ -143,7 +144,7 @@ async function callOnce(userPayloadJson: string): Promise<DailyReport> {
     "候选新闻（JSON 数组，共 " + userPayloadJson.length + " 字符）：",
     userPayloadJson,
   ].join("\n");
-  const { text } = await runClaudeCli({
+  const { text } = await runLlm({
     systemPrompt: SYSTEM_PROMPT_DIGEST,
     userPrompt,
   });

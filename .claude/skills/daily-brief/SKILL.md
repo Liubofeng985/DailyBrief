@@ -1,6 +1,6 @@
 ---
 name: daily-brief
-description: Operational knowledge for the daily-brief digest pipeline (this project). RSS/API fetchers, Sonnet enrichment via local claude CLI, trading section, HTML rendering, cross-platform scheduler integration (Windows Task Scheduler / macOS launchd / Linux cron). Load when the user asks about running daily / regenerating sections / debugging a failed run / adding or disabling sources / Sonnet quota / scheduler / why a tab shows wrong data / why a source failed. Always prefer the documented npm commands over re-implementing logic. Diagnose by reading logs/daily-*.log first, then logs/claude-calls.jsonl for LLM-side issues.
+description: Operational knowledge for the daily-brief digest pipeline (this project). RSS/API fetchers, pluggable LLM enrichment (default claude CLI on Max; also anthropic/openai/deepseek/minimax API), trading section, HTML rendering, cross-platform scheduler integration (Windows Task Scheduler / macOS launchd / Linux cron). Load when the user asks about running daily / regenerating sections / debugging a failed run / adding or disabling sources / LLM quota / scheduler / why a tab shows wrong data / why a source failed / switching LLM backend. Always prefer the documented npm commands over re-implementing logic. Diagnose by reading logs/daily-*.log first, then logs/llm-calls.jsonl for LLM-side issues.
 ---
 
 # daily-brief — Operational Skill
@@ -87,11 +87,12 @@ Order matters — top-to-bottom:
 3. If Cloudflare-related: see "LinuxDo lesson" below
 4. Single-source failure must never kill the run (try/catch per source in `daily.ts`)
 
-### "Sonnet 调用炸 / 中文摘要缺失"
-1. `npm run quota-report` — check 5h window + recent failures
-2. If quota hot: wait or skip
+### "LLM 调用炸 / 中文摘要缺失"
+1. `npm run quota-report` — per-backend summary; for `claude-cli` shows 5h window, for API backends shows 24h spending
+2. If quota hot on `claude-cli`: wait or temporarily switch via `.env.local` (`LLM_BACKEND=openai` etc.)
 3. If specific phase missing summaries: `npm run regen-enrich <cat:sub>`
-4. Each call logged to `logs/claude-calls.jsonl` — grep `"success":false`, see `errorCategory`
+4. Each call logged to `logs/llm-calls.jsonl` (legacy `claude-calls.jsonl` still read for backwards-compat) — grep `"success":false`, see `errorCategory` (`quota` / `timeout` / `auth` / `other`)
+5. Which backend is active = `LLM_BACKEND` env in `.env.local`; not set → `claude-cli`
 
 ### "UI 出错 / 某个 tab 显示异常"
 1. `npm run render` (1 second) — often fixes display-only bugs
@@ -179,6 +180,7 @@ Common:
 
 - Don't `console.log` debugging that won't survive — use structured logger or write to `logs/`
 - Don't add `process.exit(1)` deep in a fetcher; let `daily.ts`'s per-source try/catch handle it
-- Don't bypass `runClaudeCli` to call Anthropic API directly — that switches from Max-subscription billing to per-token billing
+- Don't bypass `runLlm` (lib/ai/llm.ts) by importing a specific backend directly — that defeats the LLM_BACKEND switch and pins call sites to one provider
+- Don't change the default backend silently; if user has Max subscription they almost certainly want `claude-cli` to keep using it. Switching to API costs them money
 - Don't put AI-generated digest fields (hero_headline, editor_note, keywords) back into the HTML view — they're intentionally hidden. Still generated and live in `<date>.json` and `<date>.md` for archive
 - Don't add Playwright / Puppeteer dependencies casually — project uses curl + JSON APIs to stay light

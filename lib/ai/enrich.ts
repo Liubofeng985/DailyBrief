@@ -1,5 +1,5 @@
 import { jsonrepair } from "jsonrepair";
-import { runClaudeCli } from "./claude-cli";
+import { runLlm } from "./llm";
 
 interface EnrichInput {
   url: string;
@@ -109,7 +109,7 @@ async function runEnrichment(
   const result = new Map<string, string>();
 
   try {
-    const { text } = await runClaudeCli({
+    const { text } = await runLlm({
       systemPrompt,
       userPrompt,
       timeoutMs: 240_000,

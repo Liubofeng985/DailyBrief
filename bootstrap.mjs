@@ -70,10 +70,13 @@ console.log(`Trigger:  ${args.at}\n`);
 
 // === 1. Prerequisites ===
 
-function requireCommand(cmd, hint) {
+function hasCommand(cmd) {
   const which = process.platform === "win32" ? "where" : "which";
-  const r = spawnSync(which, [cmd], { stdio: "ignore", shell: true });
-  if (r.status !== 0) {
+  return spawnSync(which, [cmd], { stdio: "ignore", shell: true }).status === 0;
+}
+
+function requireCommand(cmd, hint) {
+  if (!hasCommand(cmd)) {
     throw new Error(`Missing prerequisite: '${cmd}' not on PATH.\n  ${hint}`);
   }
 }
@@ -81,7 +84,17 @@ function requireCommand(cmd, hint) {
 requireCommand("git", "Install Git: https://git-scm.com/downloads");
 requireCommand("node", "Install Node 20+: https://nodejs.org/");
 requireCommand("npm", "(should come with Node)");
-requireCommand("claude", "Install Claude Code CLI: npm install -g @anthropic-ai/claude-code");
+
+// claude CLI is the *default* LLM backend but not strictly required — users
+// running the OpenAI / Anthropic / DeepSeek / MiniMax API backends never call
+// claude. Warn and continue so non-Claude-Code installs aren't blocked.
+if (!hasCommand("claude")) {
+  console.warn(
+    "[warn] 'claude' CLI not found on PATH.\n" +
+      "       Fine if you plan to use an API-based LLM backend (LLM_BACKEND=openai|anthropic|deepseek|minimax).\n" +
+      "       For the default claude-cli backend: npm install -g @anthropic-ai/claude-code\n",
+  );
+}
 
 const nodeMajor = parseInt(process.versions.node.split(".")[0], 10);
 if (nodeMajor < 20) {
@@ -139,8 +152,13 @@ if (smoke.status !== 0) {
 // === 6. Final ===
 
 console.log("\n✓ Installed!");
+if (!hasCommand("claude")) {
+  console.log("\n⚠ Before the first daily run, pick an LLM backend:");
+  console.log(`  - Install claude CLI:  npm install -g @anthropic-ai/claude-code  (then run \`claude\` once to log in)`);
+  console.log(`  - Or use API backend:  copy ${path.join(args.target, ".env.example")} → .env.local and set LLM_BACKEND + the matching API key`);
+}
 console.log("\nTry it:");
-console.log("  - Open Claude Code anywhere, type:  /run-daily");
+console.log("  - Claude Code users — open Claude Code anywhere, type:  /run-daily");
 if (process.platform === "win32") {
   console.log("  - Or:  Start-ScheduledTask -TaskName DailyBrief");
 } else if (process.platform === "darwin") {

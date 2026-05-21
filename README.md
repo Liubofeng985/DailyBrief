@@ -53,18 +53,36 @@
 
 ## 给 AI Agent 一句话装
 
-如果你正在用 Claude Code / Cursor / Codex 之类的 AI Agent，直接把下面这段发给它：
+无论你用哪个 AI Agent（Claude Code / Cursor / Codex / Continue.dev / OpenClaw 等），直接把下面这段发给它：
 
 > 帮我装这个开源项目，跑 `node scripts/install.mjs --global` 完成全局安装，装好后告诉我下次自动触发的时间：
 > https://github.com/leiting-eric/DailyBrief
 
-Agent 会自动 `git clone` → `npm install` → 注册系统调度器 → 链接全局 skill → 跑一次 `npm run dry-run` 烟测。完成后任意目录打开 Claude Code 都能用 `/run-daily`、`/check-daily`，描述问题（"日报又挂了"）也能触发 `daily-brief` skill 自动加载。
+Agent 会执行：`git clone` → `npm install` → 注册系统调度器（Task Scheduler / launchd / cron）→ 跑一次 `npm run dry-run` 烟测。**装完后定时任务在系统层面跑，不再需要 Agent 介入**。
 
-> ⚠️ 默认 LLM 后端是 **claude CLI**（多数 Claude Code 用户开箱即用）。Agent 替不了它的 OAuth 登录（必须本人在浏览器点同意）。如果还没登录过，先跑一次：
-> ```bash
-> echo "hi" | claude --print --model sonnet
-> ```
-> 会引导你登录，登录一次永久生效。**不用 Claude Code 或想走自己的 API key**，复制 `.env.example` 到 `.env.local` 把 `LLM_BACKEND` 切到 OpenAI / Anthropic / DeepSeek / MiniMax 任一家，见 [LLM 后端配置](#llm-后端配置)。
+### Claude Code 用户额外福利
+
+`--global` 步骤会在 `~/.claude/` 下链接 skill 和 slash command，所以：
+- 任意目录打开 Claude Code 都能用 `/run-daily`、`/check-daily`
+- 描述问题（"日报又挂了"、"加个新数据源"）也能触发 `daily-brief` skill 自动加载
+
+Cursor / Codex / 其他 Agent 没有 skill 加载机制，定时任务跑得起来，但这两个交互层福利吃不到。要手动运行就 `cd` 到项目目录跑 `npm run daily`，或者用对应平台的命令触发：
+
+| 平台 | 手动触发 |
+|---|---|
+| Windows | `Start-ScheduledTask -TaskName DailyBrief` |
+| macOS | `launchctl start com.daily-brief` |
+| Linux | `node scripts/run-daily.mjs`（cron 不支持手动触发） |
+
+### LLM 后端说明
+
+默认走 **claude CLI**——多数 Claude Code 用户开箱即用，但首次需要本人在浏览器登录一次（Agent 替不了 OAuth 同意）：
+
+```bash
+echo "hi" | claude --print --model sonnet
+```
+
+登录一次永久生效。**不用 Claude Code 或想走自己的 API key 的用户**：跳过 claude CLI，复制 `.env.example` 到 `.env.local` 把 `LLM_BACKEND` 切到 OpenAI / Anthropic / DeepSeek / MiniMax 任一家——见 [LLM 后端配置](#llm-后端配置)。bootstrap 检测到没装 claude CLI 时只发警告不阻断，可以继续完成调度器注册。
 
 ## 一键安装（自己跑）
 

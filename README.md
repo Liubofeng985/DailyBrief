@@ -32,7 +32,7 @@
 - **财经要点** — Bloomberg / WSJ / FT / BBC / Economist 全球财经
 - **社区讨论** — V2EX / LinuxDo 中文社区热议
 
-英文源附 LLM 生成的中文摘要。报告以 `daily_reports/<UTC日期>/<UTC日期>.html` 落盘（每天一个子目录），单文件、CSS+JS 全内联。
+英文源附 LLM 生成的中文摘要。报告以 `daily_reports/<日期>/<日期>.html` 落盘（每天一个子目录），日期使用系统本地时区，可在 `.env.local` 用 `REPORT_TZ` 改（如 `Asia/Shanghai` / `UTC`）。单文件、CSS+JS 全内联。
 
 ## 设计要点
 

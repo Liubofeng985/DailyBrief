@@ -5,7 +5,7 @@ description: Operational knowledge for the daily-brief digest pipeline (this pro
 
 # daily-brief — Operational Skill
 
-This project generates a single-page HTML daily digest covering tech / finance / politics / market data / community discussion. The pipeline runs locally via the OS scheduler (Windows Task Scheduler / macOS launchd / Linux cron, default 16:00 local time) and emits `daily_reports/<UTC-date>/<UTC-date>.html` + sidecar files (each date gets its own subdir).
+This project generates a single-page HTML daily digest covering tech / finance / politics / market data / community discussion. The pipeline runs locally via the OS scheduler (Windows Task Scheduler / macOS launchd / Linux cron, default 16:00 local time) and emits `daily_reports/<YYYY-MM-DD>/<YYYY-MM-DD>.html` + sidecar files (each date gets its own subdir). The date label uses the system local timezone by default — set `REPORT_TZ` (e.g. `Asia/Shanghai`, `UTC`) in `.env.local` to override.
 
 Detailed architecture lives in code; this skill is a cheat sheet for **operating** and **diagnosing**, not a re-explanation of the system.
 
@@ -39,7 +39,7 @@ The config file is written by `node scripts/install.mjs --global`. If it's missi
 | Open today's report in Chrome | `npm run open` | instant |
 | Sonnet quota + call history | `npm run quota-report` | instant |
 
-`[date]` defaults to today's UTC date (`YYYY-MM-DD`). Pipeline uses UTC for filenames but the wrapper script and Task Scheduler use local time, so `daily_reports/2026-05-17/2026-05-17.html` may be produced by a local-evening trigger on May 16.
+`[date]` defaults to today's date in the report timezone (system local, or `REPORT_TZ` if set). The pipeline and the OS scheduler both run in local time, so the report's date label = the date when the trigger fired in the report timezone. A user with `REPORT_TZ=Asia/Shanghai` whose machine fires the trigger at 23:00 UTC-8 will get a "next-day Shanghai" file, e.g. `daily_reports/2026-05-17/2026-05-17.html`.
 
 `<cat:sub>` accepted by `regen-enrich`: `finance:news`, `politics:world`, `tech:ai-news`. Single-source X 推文 (`tech:x-viral`) is enriched as part of `daily` only — no top-up path.
 
@@ -47,7 +47,7 @@ The config file is written by `node scripts/install.mjs --global`. If it's missi
 
 | Task | File |
 |---|---|
-| Add / disable / re-categorize a source | `lib/sources/registry.ts` |
+| Add / disable / re-categorize a source | `sources.config.json` (project root — single source of truth; `lib/sources/registry.ts` is just a loader) |
 | Rename L1 tab labels | `lib/output/render.ts` `CATEGORY_LABELS` |
 | Reorder / rename L2 subcategories | `SUBCATEGORY_ORDER` + `SUBCATEGORY_LABELS` in same file |
 | Change per-source item cap | `SOURCE_DISPLAY_LIMITS` |
@@ -128,10 +128,14 @@ Order matters — top-to-bottom:
 
 ## Source registry conventions
 
-- Every source has: `id`, `name`, `type` (`rss`/`api`/`scrape`), `url`, `category`, `subcategory?`, `enabled?`, `useCurl?`, `lang?`
+Sources live in [`sources.config.json`](sources.config.json) at the project root. `lib/sources/registry.ts` only loads + validates that JSON at module-init; never hardcode sources in TS.
+
+- Every source has: `id`, `name`, `type` (`rss`/`api`/`scrape`), `url`, `category`, `subcategory?`, `enabled?`, `useCurl?`, `lang?`, `locales?`
 - `useCurl: true` for sources behind Cloudflare-style TLS-fingerprint blocks
 - `lang: "zh"` (or "en") for sources already in a specific language — enrich skips them when REPORT_LOCALE matches
-- Disabled sources stay in registry with `enabled: false` + comment explaining why — don't delete
+- `locales: ["zh"|"en"]` filters which REPORT_LOCALE keeps the source. Omit → both
+- Disabled sources stay in the JSON with `enabled: false` + a `notes` field explaining why — don't delete
+- Run `npm run sources` to see the table by category with current enable/filter status
 
 ## Render layout (current, may evolve)
 

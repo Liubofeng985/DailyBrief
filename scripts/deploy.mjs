@@ -34,13 +34,14 @@ if (!host || !remotePath) {
 
 // Pick the report to deploy:
 //   - explicit arg wins (e.g. `npm run deploy 2026-05-20`)
-//   - otherwise: today's date in Asia/Shanghai (matches daily.ts's todayKey).
-//     If that file doesn't exist (called manually before today's run, or
-//     across a tz boundary), fall back to the most recent <YYYY-MM-DD>.html
-//     on disk so manual invocations always do something useful.
+//   - otherwise: today's date in REPORT_TZ (or system local if unset),
+//     matching daily.ts's todayKey(). If that file doesn't exist (called
+//     manually before today's run, or across a tz boundary), fall back to
+//     the most recent <YYYY-MM-DD>/ directory on disk so manual invocations
+//     always do something useful.
 const dateArg = process.argv[2];
-const todayShanghai = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Shanghai",
+const todayLocal = new Intl.DateTimeFormat("en-CA", {
+  timeZone: process.env.REPORT_TZ?.trim() || undefined,
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
@@ -59,9 +60,9 @@ if (dateArg) {
     console.error(`[deploy] local file missing: ${localFile}`);
     process.exit(1);
   }
-} else if (fs.existsSync(reportPath(todayShanghai))) {
-  date = todayShanghai;
-  localFile = reportPath(todayShanghai);
+} else if (fs.existsSync(reportPath(todayLocal))) {
+  date = todayLocal;
+  localFile = reportPath(todayLocal);
 } else {
   const dirs = fs
     .readdirSync("daily_reports")
@@ -74,7 +75,7 @@ if (dateArg) {
   }
   date = dirs[dirs.length - 1];
   localFile = reportPath(date);
-  console.log(`[deploy] today (${todayShanghai}) not generated yet, deploying latest: ${date}`);
+  console.log(`[deploy] today (${todayLocal}) not generated yet, deploying latest: ${date}`);
 }
 
 const sizeKb = (fs.statSync(localFile).size / 1024).toFixed(1);

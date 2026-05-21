@@ -7,7 +7,8 @@ import {
   sma,
 } from "./indicators";
 import type { TickerRawData } from "./yahoo";
-import type { TickerDef } from "./watchlist";
+import { getDisplayName, type TickerDef } from "./watchlist";
+import { REPORT_LOCALE } from "../sources/registry";
 
 export type SignalType =
   | "golden-cross" // SMA50 crosses above SMA200 — bullish trend confirmation
@@ -187,7 +188,7 @@ export function analyzeTicker(
 
   return {
     symbol: def.symbol,
-    displayName: def.displayName,
+    displayName: getDisplayName(def, REPORT_LOCALE),
     group: def.group,
     currency: raw.currency,
     exchangeName: raw.exchangeName,

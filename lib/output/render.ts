@@ -1179,7 +1179,7 @@ export function renderHtml(
     ${trading ? `<button class="tab" data-tab="trading">${STR.catTrading}<span class="count">${trading.tickers.length}</span></button>` : ""}
     <button class="tab" data-tab="politics">${CATEGORY_LABELS.politics}<span class="count">${counts.politics}</span></button>
     <button class="tab" data-tab="finance">${CATEGORY_LABELS.finance}<span class="count">${counts.finance}</span></button>
-    <button class="tab" data-tab="community">${STR.catCommunity}<span class="count">${counts.community}</span></button>
+    ${techCommunitySubs.length > 0 ? `<button class="tab" data-tab="community">${STR.catCommunity}<span class="count">${counts.community}</span></button>` : ""}
   </nav>
 
   <section class="panel active" data-panel="tech">
@@ -1192,9 +1192,9 @@ export function renderHtml(
   <section class="panel" data-panel="finance">
     ${renderRawCategoryPanel("finance", raw.finance)}
   </section>
-  <section class="panel" data-panel="community">
+  ${techCommunitySubs.length > 0 ? `<section class="panel" data-panel="community">
     ${renderRawCategoryPanel("tech", techCommunitySubs)}
-  </section>
+  </section>` : ""}
 
   <footer>
     ${STR.footer}

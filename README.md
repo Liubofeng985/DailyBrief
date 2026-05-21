@@ -1,15 +1,16 @@
-# daily-brief · 每日 AI/科技/财经/时政简报
+# daily-brief · 10 分钟拥有你自己的 AI 每日简报
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node 20+](https://img.shields.io/badge/node-20%2B-brightgreen.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
 [![LLM: pluggable](https://img.shields.io/badge/LLM-pluggable%20(5%20backends)-orange.svg)](#llm-后端配置)
+[![Deploy: GH Actions](https://img.shields.io/badge/deploy-GitHub%20Actions-2088ff.svg)](#a-在-github-actions-上跑零基础设施推荐)
 [![Demo: live](https://img.shields.io/badge/demo-daily.leiting.tech-brightgreen.svg)](https://daily.leiting.tech)
 [![Stars](https://img.shields.io/github/stars/leiting-eric/DailyBrief?style=social)](https://github.com/leiting-eric/DailyBrief)
 
-> **每天自动跑一份你的私人简报** — 22 个数据源 · LLM 摘要 · 股票/加密**技术指标 + AI 交易点评** · 中英双语 · 5 个 LLM 后端可选（Claude CLI / Anthropic / OpenAI / DeepSeek / MiniMax）· 一切本地运行，零云依赖。
+> **Fork → 加一个 API key → 每天自动生成一份你专属的 AI 日报**。22 个数据源 · LLM 中文摘要 · 21 个股票/加密标的的**技术指标 + AI 交易点评** · 中英双语 · 5 个 LLM 后端可选 · 可在 GitHub Actions 上跑（零基础设施）或常驻你的电脑/服务器。
 
-> ***Your morning brief shouldn't live in someone else's database.*** *A self-hosted daily digest — tech, markets, geopolitics, finance — 22 sources, LLM-summarized in Chinese or English, with stock/crypto technicals + AI trading commentary. 5 swappable LLM backends (claude-cli / anthropic / openai / deepseek / minimax). Zero secrets to start with the default `claude` CLI. [Live demo](https://daily.leiting.tech).*
+> ***Fork → add one API key → wake up to your own AI-curated daily brief.*** *22 sources · LLM summaries in your language · 21-ticker market panel with SMA/RSI/MACD signals + AI commentary · bilingual (zh/en) · 5 swappable LLM backends · runs on GitHub Actions (zero infra) or your own laptop/server.*
 
 **[📰 在线 Demo · daily.leiting.tech](https://daily.leiting.tech)**
 
@@ -42,49 +43,32 @@
 - **错误隔离**：单源失败不阻断全流程，单次 LLM 失败有 1-shot 重试 + 兜底渲染
 - **可观测**：每次任务运行写 `logs/daily-<日期>.log`，每次 LLM 调用写 `logs/llm-calls.jsonl`，`npm run quota-report` 按 backend 汇总热度
 
-## 前置要求
+## 三种部署方式选一种
 
-- **Node.js 20+** + **npm**
-- **Windows 10/11** / **macOS 12+** / **Linux**（任一平台都支持，定时机制自动适配）
-- **一个能跑的 LLM**（任选其一）：
-  - 默认：[Claude Code CLI](https://docs.claude.com/en/docs/claude-code/quickstart) 已登录（项目复用它的认证，按你 Claude 订阅的等级计费）
-  - 或：Anthropic / OpenAI / DeepSeek / MiniMax 任一家的 API key（详见 [LLM 后端配置](#llm-后端配置)）
-- **git**
+| 方式 | 适合谁 | 你需要 | 几分钟搞定 |
+|---|---|---|---|
+| **A. GitHub Actions + Pages** | 没服务器、不想常开电脑 | 一个 API key（Anthropic / OpenAI / DeepSeek / MiniMax 任一） | ~5 分钟（推荐） |
+| **B. 本地常驻** | 有常开的电脑/服务器、想极致便宜 | Node 20+，可选 Claude Code 登录 | ~3 分钟 |
+| **C. 给 AI Agent 一句话** | 懒、想让 Cursor / Codex / Claude Code 帮你装 | 同上 | 一句话 |
 
-## 给 AI Agent 一句话装
+下面分别讲。
 
-无论你用哪个 AI Agent（Claude Code / Cursor / Codex / Continue.dev / OpenClaw 等），直接把下面这段发给它：
+### A. 在 GitHub Actions 上跑（零基础设施，推荐）
 
-> 帮我装这个开源项目，跑 `node scripts/install.mjs --global` 完成全局安装，装好后告诉我下次自动触发的时间：
-> https://github.com/leiting-eric/DailyBrief
+1. **Fork 这个 repo**（GitHub 右上角 Fork 按钮）
+2. 进 Fork 的 repo → **Settings → Actions → General → Workflow permissions** 设为 "Read and write"
+3. **Settings → Pages → Build & deployment → Source** 选 "Deploy from a branch"，分支 `gh-pages` / 路径 `/ (root)`（第一次跑完才会出现 gh-pages 分支，先建好 secret 再触发一次即可）
+4. **Settings → Secrets and variables → Actions → New repository secret** 加任一 API key：
+   - `ANTHROPIC_API_KEY`（推荐，prompt 都按 Sonnet 写的）
+   - 或 `OPENAI_API_KEY` / `DEEPSEEK_API_KEY` / `MINIMAX_API_KEY`
+5. （可选）同页 **Variables** 标签加：`LLM_BACKEND`（默认 `anthropic`）/ `REPORT_LOCALE`（默认 `zh`，`en` 切英文）/ `REPORT_TZ`（默认 UTC，如 `Asia/Shanghai`）
+6. **Actions 标签 → 选 "Daily Brief" workflow → Run workflow** 手动触发一次
 
-Agent 会执行：`git clone` → `npm install` → 注册系统调度器（Task Scheduler / launchd / cron）→ 跑一次 `npm run dry-run` 烟测。**装完后定时任务在系统层面跑，不再需要 Agent 介入**。
+跑完后报告会在 `https://<你的用户名>.github.io/<repo-名字>/`，之后每天 08:00 UTC 自动更新。改时间编辑 [`.github/workflows/daily.yml`](.github/workflows/daily.yml) 的 cron。
 
-### Claude Code 用户额外福利
+**费用估算**：Anthropic Sonnet 每天约 $0.03-0.05（6 次调用），月成本 < $2。DeepSeek / OpenAI mini 系列更便宜。GitHub Actions / Pages 公开 repo 完全免费。
 
-`--global` 步骤会在 `~/.claude/` 下链接 skill 和 slash command，所以：
-- 任意目录打开 Claude Code 都能用 `/run-daily`、`/check-daily`
-- 描述问题（"日报又挂了"、"加个新数据源"）也能触发 `daily-brief` skill 自动加载
-
-Cursor / Codex / 其他 Agent 没有 skill 加载机制，定时任务跑得起来，但这两个交互层福利吃不到。要手动运行就 `cd` 到项目目录跑 `npm run daily`，或者用对应平台的命令触发：
-
-| 平台 | 手动触发 |
-|---|---|
-| Windows | `Start-ScheduledTask -TaskName DailyBrief` |
-| macOS | `launchctl start com.daily-brief` |
-| Linux | `node scripts/run-daily.mjs`（cron 不支持手动触发） |
-
-### LLM 后端说明
-
-默认走 **claude CLI**——多数 Claude Code 用户开箱即用，但首次需要本人在浏览器登录一次（Agent 替不了 OAuth 同意）：
-
-```bash
-echo "hi" | claude --print --model sonnet
-```
-
-登录一次永久生效。**不用 Claude Code 或想走自己的 API key 的用户**：跳过 claude CLI，复制 `.env.example` 到 `.env.local` 把 `LLM_BACKEND` 切到 OpenAI / Anthropic / DeepSeek / MiniMax 任一家——见 [LLM 后端配置](#llm-后端配置)。bootstrap 检测到没装 claude CLI 时只发警告不阻断，可以继续完成调度器注册。
-
-## 一键安装（自己跑）
+### B. 本地常驻一键装
 
 ```bash
 # Linux / macOS
@@ -95,21 +79,44 @@ irm https://raw.githubusercontent.com/leiting-eric/DailyBrief/main/bootstrap.mjs
 ```
 
 这条命令会：
-1. 检查 Node / git / claude CLI 是否就位
+1. 检查 Node / git / claude CLI 是否就位（没装 claude CLI 只发警告，可以继续走 API 后端）
 2. `git clone` 到 `~/daily-brief`（Windows: `%USERPROFILE%\daily-brief`）
 3. `npm install`
-4. 注册系统定时（Windows Task Scheduler / macOS launchd / Linux cron，默认 16:00）
+4. 注册系统定时（Windows Task Scheduler / macOS launchd / Linux cron，默认 16:00 本地时间）
 5. 写 `~/.daily-brief-config` 记录项目路径
-6. 在 `~/.claude/` 建符号链接让 skill 和 slash command 全局可用
+6. 在 `~/.claude/` 建符号链接让 Claude Code 的 skill 和 slash command 全局可用
 7. 跑一次 `npm run dry-run` 烟测
 
-装完后**任意目录**打开 Claude Code 都能 `/run-daily`、`/check-daily`，描述问题也能触发 `daily-brief` skill 自动加载。
+**Claude Code 用户额外福利**：装完后任意目录都能 `/run-daily`、`/check-daily`，描述问题（"日报又挂了"）也能触发 `daily-brief` skill 自动加载。**其他 agent**（Cursor / Codex）没有 skill 加载机制，但定时任务跑得起来。手动触发用：
 
-自定义安装位置或触发时间：
+| 平台 | 手动触发 |
+|---|---|
+| Windows | `Start-ScheduledTask -TaskName DailyBrief` |
+| macOS | `launchctl start com.daily-brief` |
+| Linux | `node scripts/run-daily.mjs`（cron 不支持手动触发） |
+
+自定义路径 / 触发时间：
 
 ```bash
 node bootstrap.mjs --target /custom/path --at 07:30
 ```
+
+**LLM 后端**：默认走本地 `claude` CLI（首次需在浏览器登录：`echo "hi" | claude --print --model sonnet`，登录一次永久生效）。不用 Claude Code 就跳过它，复制 `.env.example` 到 `.env.local` 把 `LLM_BACKEND` 切到 OpenAI / Anthropic / DeepSeek / MiniMax —— 见 [LLM 后端配置](#llm-后端配置)。
+
+### C. 给 AI Agent 一句话装
+
+无论你用哪个 AI Agent（Claude Code / Cursor / Codex / Continue.dev / OpenClaw 等），把下面这段发给它：
+
+> 帮我装这个开源项目，按 README 的"本地常驻"流程跑 bootstrap，完成后告诉我下次自动触发的时间：
+> https://github.com/leiting-eric/DailyBrief
+
+项目里有 [`AGENTS.md`](AGENTS.md)（通用 agent 协议）+ [`.claude/skills/daily-brief/SKILL.md`](.claude/skills/daily-brief/SKILL.md)（Claude Code 专属，更详细），Agent 装完后能直接帮你诊断"今天报告没出来"、"加个新数据源"这类问题。
+
+## 前置要求
+
+- **Node.js 20+** + **npm** + **git**（B/C 方式本地需要；A 方式不需要——GH Actions 容器自带）
+- **一个能跑的 LLM**（任选其一）：Claude Code CLI 已登录 / Anthropic / OpenAI / DeepSeek / MiniMax 任一家的 API key
+- 平台：Windows 10/11、macOS 12+、Linux（任一平台都支持，定时机制自动适配）
 
 ## 手动安装
 

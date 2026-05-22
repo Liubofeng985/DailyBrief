@@ -12,7 +12,10 @@
 
 > ***Fork → add one API key → wake up to your own AI-curated daily brief.*** *22 sources · LLM summaries in your language · 21-ticker market panel with SMA/RSI/MACD signals + AI commentary · bilingual (zh/en) · 5 swappable LLM backends · runs on GitHub Actions (zero infra) or your own laptop/server.*
 
-**[📰 在线 Demo · daily.leiting.tech](https://daily.leiting.tech)**
+**Live demos** —
+[📰 daily.leiting.tech](https://daily.leiting.tech)（B 方式 · 本地服务器部署）
+·
+[📰 leiting-eric.github.io/DailyBrief](https://leiting-eric.github.io/DailyBrief)（A 方式 · GitHub Actions + Pages）
 
 <table>
   <tr>
@@ -80,6 +83,14 @@
 **关于费用**：GitHub Actions 公开 repo 完全免费。Pages 公开 repo 也免费。整个 GH Actions 模式唯一花钱的就是 LLM API 调用——按上表，DeepSeek 月成本不到 $1，Anthropic Sonnet < $2。
 
 > ⚠️ 用 GH Actions 模式就意味着**用不了本地 `claude` CLI**——Claude Code 的 OAuth 登录在你本机，GitHub 的服务器看不到。如果你已经在 Max 订阅里，建议两条路并行：本地装（B 方式）用 Claude CLI 跑你自己的服务器版本，GH Actions 用 DeepSeek 跑 Pages 公开版本。两份报告独立，互不影响。
+
+#### A 方式常见坑
+
+- **"Upgrade or make this repository public to enable Pages"** —— GitHub Pages 在 Free 账户的 Private repo 上不可用。把 repo 改成 Public（Settings → General → Danger Zone → Change visibility），Actions Secrets 在 Public repo 里依然是加密保护的、对其他人不可见
+- **Variable name 报 "alphanumeric only"** —— 输入 `LLM_BACKEND` 时下划线被中文输入法替换成了全角 `＿`（U+FF3F）。切到英文输入法重新输入 Shift+`-` 那个标准下划线，或直接复制粘贴
+- **第一次跑完才能选 Pages source** —— Pages 设置页要求选一个已存在的分支，但 `gh-pages` 是首次 workflow 跑成功后才创建出来。所以顺序是：配 secret → 触发 workflow → 跑完 → 回 Settings → Pages 选 `gh-pages`
+- **Action 红 X 怎么看具体原因** —— 点失败的 build → 左边列出每个 step → 找有红 X 的那步点开看 log。最常见两类：`401/402` = API key 拼错或没余额；`403` = workflow permissions 没设成 Read and write
+- **跑了 30 秒就挂** —— 多半是 secret/variable 没配对（光填了 secret 没填 `LLM_BACKEND` variable）或者 LLM API 返 400。看 step "Generate today's report" 的 log
 
 ### B. 本地常驻一键装
 

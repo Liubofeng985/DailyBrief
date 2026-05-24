@@ -28,8 +28,14 @@ name: Daily Brief
 
 on:
   schedule:
-    # Hourly trigger. The gate job decides which one actually does work.
-    - cron: '0 * * * *'
+    # Hourly trigger at minute 7 (off-peak). GitHub Actions silently drops
+    # a non-trivial fraction of scheduled runs whose cron lands at minute
+    # 0 — that's where everyone clusters. Moving to an odd off-peak minute
+    # roughly halves the miss rate. The gate decides which firings actually
+    # build, and the catchup branch in the gate covers the residual misses
+    # by allowing a build later in the day if today's report is still
+    # absent from gh-pages.
+    - cron: '7 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -53,6 +59,7 @@ jobs:
           REPORT_HOUR: ${{ vars.REPORT_HOUR }}
           REPORT_DAYS: ${{ vars.REPORT_DAYS }}
           EVENT_NAME: ${{ github.event_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -109,11 +116,49 @@ jobs:
             done
           fi
 
+          # Catchup branch — covers GitHub Actions silently dropping scheduled
+          # triggers (which happens to ~30% of cron runs, especially at the
+          # exact target hour). Fires when:
+          #   1. day matches AND
+          #   2. exact hour didn't match AND
+          #   3. we're past today's earliest REPORT_HOUR AND
+          #   4. today's report doesn't yet exist on gh-pages
+          # Once today's report is published, this branch self-suppresses on
+          # subsequent gate runs — no double-builds per day.
+          catchup_match=false
+          if [ "$day_match" = "true" ] && [ "$hour_match" = "false" ]; then
+            earliest_hour=99
+            for h in "${HLIST[@]}"; do
+              h_trim="${h// /}"
+              if [ "$h_trim" -lt "$earliest_hour" ]; then
+                earliest_hour=$h_trim
+              fi
+            done
+            if [ "$NOW_HOUR" -gt "$earliest_hour" ]; then
+              TODAY=$(TZ="$TZ_VAL" date +%Y-%m-%d)
+              CHECK_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${TODAY}/${TODAY}.html?ref=gh-pages"
+              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "$CHECK_URL" || echo "000")
+              if [ "$HTTP_CODE" = "404" ]; then
+                echo "↻ Catchup: today's report ($TODAY) missing from gh-pages — recovering"
+                catchup_match=true
+              else
+                echo "Catchup check: today's report exists (HTTP $HTTP_CODE) — no action"
+              fi
+            fi
+          fi
+
           if [ "$hour_match" = "true" ] && [ "$day_match" = "true" ]; then
             echo "✓ Match — proceeding to build"
             echo "should-run=true" >> "$GITHUB_OUTPUT"
+          elif [ "$catchup_match" = "true" ]; then
+            echo "✓ Catchup — proceeding to build"
+            echo "should-run=true" >> "$GITHUB_OUTPUT"
           else
-            echo "✗ No match — skipping (hour_match=$hour_match, day_match=$day_match)"
+            echo "✗ No match — skipping (hour=$hour_match day=$day_match catchup=$catchup_match)"
             echo "should-run=false" >> "$GITHUB_OUTPUT"
           fi
 

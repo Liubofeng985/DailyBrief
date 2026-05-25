@@ -10,15 +10,20 @@
  *   LLM_BACKEND=openai       (OpenAI Chat Completions)
  *   LLM_BACKEND=deepseek     (DeepSeek, OpenAI-compatible)
  *   LLM_BACKEND=minimax      (MiniMax, OpenAI-compatible)
+ *   LLM_BACKEND=zhipu        (Zhipu AI / 智谱, Anthropic-compatible)
  *
  * Per-backend config (API keys, models, base URLs) lives in .env.local.
  * See .env.example for the full list.
  */
 
 import { CLAUDE_MODEL, runClaudeCli } from "./backends/claude-cli";
-import { anthropicModel, runAnthropic } from "./backends/anthropic";
 import {
-  PRESETS,
+  PRESETS as ANTHROPIC_PRESETS,
+  anthropicCompatModel,
+  runAnthropicCompat,
+} from "./backends/anthropic-compat";
+import {
+  PRESETS as OPENAI_PRESETS,
   openaiCompatModel,
   runOpenAICompat,
 } from "./backends/openai-compat";
@@ -39,7 +44,8 @@ export type LlmBackendId =
   | "anthropic"
   | "openai"
   | "deepseek"
-  | "minimax";
+  | "minimax"
+  | "zhipu";
 
 const VALID_BACKENDS: ReadonlySet<LlmBackendId> = new Set([
   "claude-cli",
@@ -47,6 +53,7 @@ const VALID_BACKENDS: ReadonlySet<LlmBackendId> = new Set([
   "openai",
   "deepseek",
   "minimax",
+  "zhipu",
 ]);
 
 export function getBackend(): LlmBackendId {
@@ -63,23 +70,23 @@ export function getBackend(): LlmBackendId {
  * Returns the active model name for the configured backend, useful for
  * stamping a MODEL_TAG into report metadata.
  */
-function getActiveModel(): string {
-  const backend = getBackend();
+function getActiveModel(backend: LlmBackendId): string {
   switch (backend) {
     case "claude-cli":
       return CLAUDE_MODEL;
     case "anthropic":
-      return anthropicModel();
+    case "zhipu":
+      return anthropicCompatModel(ANTHROPIC_PRESETS[backend]);
     case "openai":
     case "deepseek":
     case "minimax":
-      return openaiCompatModel(PRESETS[backend]);
+      return openaiCompatModel(OPENAI_PRESETS[backend]);
   }
 }
 
-/** A short tag suitable for embedding in report JSON: "<backend>-<model>" */
 export function getModelTag(): string {
-  return `${getBackend()}-${getActiveModel()}`;
+  const backend = getBackend();
+  return `${backend}-${getActiveModel(backend)}`;
 }
 
 export async function runLlm(opts: LlmRunOptions): Promise<LlmRunResult> {
@@ -88,11 +95,11 @@ export async function runLlm(opts: LlmRunOptions): Promise<LlmRunResult> {
     case "claude-cli":
       return runClaudeCli(opts);
     case "anthropic":
-      return runAnthropic(opts);
+    case "zhipu":
+      return runAnthropicCompat(opts, ANTHROPIC_PRESETS[backend]);
     case "openai":
     case "deepseek":
     case "minimax":
-      return runOpenAICompat(opts, PRESETS[backend]);
+      return runOpenAICompat(opts, OPENAI_PRESETS[backend]);
   }
 }
-

@@ -244,3 +244,16 @@ jobs:
           publish_branch: gh-pages
           keep_files: false  # we restored everything above, so a clean publish is fine
           commit_message: 'daily: report for ${{ github.run_id }}'
+      - name: Notify via Server酱
+        if: success()
+        env:
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+        run: |
+          if [ -z "$SERVERCHAN_SENDKEY" ]; then
+            echo "未配置 SERVERCHAN_SENDKEY，跳过通知"
+            exit 0
+          fi
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          curl -sS -X POST "https://sctapi.ftqq.com/${SERVERCHAN_SENDKEY}.send" \
+            --data-urlencode "title=📰 今日早报已生成" \
+            --data-urlencode "desp=🤖 AI · 💻 科技 · 💰 财经 👉 点击查看：${REPORT_URL} 生成时间：$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M')"

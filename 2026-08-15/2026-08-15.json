@@ -1,111 +1,82 @@
 {
-  "hero_headline": "特朗普扬言将霍尔木兹海峡宣布为美国领土",
-  "daily_overview": "今日科技圈密集迭代：Google 发布 Gemini 3.7 Flash，OpenAI 推出 GPT-5.6 构建者指南，智谱释放 GLM-5.3 开放信号。财经方面，Nvidia 披露持有 SpaceX 210 亿美元股份，Jane Street 因 AI 抛售或亏 150 亿美元，特朗普家族加密企业获有条件银行牌照；日本买入日元引发套息平仓担忧，美国称多国助中国规避关税。时政上，特朗普扬言将霍尔木兹海峡宣布为美国领土，俄被指干预摩尔多瓦，台湾要求印尼解释台东联合军演。多重风险叠加，地缘与市场同步承压。",
+  "hero_headline": "英伟达披露持有 SpaceX 210 亿美元股份",
+  "daily_overview": "今日科技领域竞争升温：谷歌发布 Gemini 3.7 Flash，主打编码与智能体工作流；OpenAI 推出 GPT-5.6 Sol 超快模式，宣称推理速度最高提升 14 倍。财经方面，英伟达披露持有 SpaceX 210 亿美元股份，Jane Street 因 7 月 AI 资产回调损失 150 亿美元；特朗普家族加密企业获得银行牌照，美国报告称多国协助中国规避关税。地缘政治层面，特朗普威胁将霍尔木兹海峡称为美国领土，俄罗斯干预摩尔多瓦选举曝光，台湾对印尼参加中国台东军演提出质疑。整体看，科技迭代、市场波动与地缘冲突信号同时上升。",
   "tech_briefs": [
     {
-      "title": "Google 发布 Gemini 3.7 Flash 模型",
+      "title": "谷歌发布 Gemini 3.7 Flash 模型",
       "url": "https://deepmind.google/blog/introducing-gemini-3-7-flash/",
       "source": "DeepMind Blog",
-      "summary": "Google 在 Gemini 3.6 Flash 发布三周后即推出 3.7 Flash，面向编程、网络开发、知识工作与智能体流程，并附带 50% 的入门价格下调。（多家报道）",
+      "summary": "Gemini 3.7 Flash 在 Gemini 3.6 Flash 三周后发布，目标编码、网页开发、知识工作和智能体工作流，并提供 50% 的入门价格下调。（多家报道）",
       "importance": 9
     },
     {
-      "title": "OpenAI 发布 GPT-5.6 构建者指南",
-      "url": "https://openai.com/index/builders-guide-to-gpt-5-6",
+      "title": "OpenAI 推出 GPT-5.6 Sol 超快模式",
+      "url": "https://openai.com/index/previewing-ultrafast",
       "source": "OpenAI News",
-      "summary": "OpenAI 发布面向初创企业的 GPT-5.6 构建指南，讲解如何利用新 Responses API 与更智能的模型选择，更低成本地构建速度更快的 AI 智能体。",
-      "importance": 8
+      "summary": "新 API 服务层由 Cerebras 提供算力，GPT-5.6 Sol 推理速度最高提升 14 倍，每秒输出最高 750 个 token，面向需要低延迟的智能体应用。（多家报道）",
+      "importance": 9
     },
     {
-      "title": "智谱称 GLM-5.3 将走负责任的开放发布路线",
-      "url": "https://x.com/Zai_org/status/2088280509474320693",
-      "source": "X 推文 (AttentionVC)",
-      "summary": "智谱表示正为 GLM-5.3 的开放发布做准备，强调 AI 已同时进入网络攻防两端；此前 GLM-5.2 曾协助 Hugging Face 调查一起模型绕过护栏的事件。",
-      "importance": 7
-    },
-    {
-      "title": "Flock 收紧车牌识别访问规则应对隐私反弹",
+      "title": "Flock 收紧车牌读取访问规则",
       "url": "https://www.technologyreview.com/2026/08/13/1141904/flock-is-tightening-its-rules-in-response-to-a-growing-surveillance-backlash/",
       "source": "MIT Tech Review AI",
-      "summary": "警务科技公司 Flock 宣布调整执法人员访问其全国车牌读取器网络的权限，试图平抑日益强烈的监控隐私抗议，并寻求重获公众信任。",
+      "summary": "警务科技公司 Flock 宣布限制警员对其全国车牌读取网络的访问，试图回应日益增长的监控反弹并挽回信任。",
       "importance": 7
     },
     {
-      "title": "14MB 微型基础模型 needle 瞄准端侧设备",
-      "url": "https://github.com/cactus-compute/needle",
+      "title": "diagram-design 进入 GitHub 热门",
+      "url": "https://github.com/cathrynlavery/diagram-design",
       "source": "GitHub Trending",
-      "summary": "needle 是一个仅 14MB 的基础模型，面向手机、可穿戴、智能家居与机器人等微型设备。它解决端侧 AI 在有限算力和存储下难以部署较大模型的痛点，使离线推理更可行。",
+      "summary": "该项目为 Claude Code 提供 29 种编辑图表类型，以自包含 HTML 和 SVG 输出。它解决开发者快速生成示意图、架构图等文档需求，减少对复杂绘图工具依赖，采用轻量前端模板实现。",
       "importance": 6
-    }
-  ],
-  "finance_briefs": [
-    {
-      "title": "英伟达披露持有 SpaceX 210 亿美元股份",
-      "url": "https://www.ft.com/content/6f66a76d-0b2d-4301-886c-87ecc046731b?syn-25a6b1a6=1",
-      "source": "Financial Times",
-      "summary": "英伟达最新披露持有 SpaceX 约 210 亿美元股份。此前马斯克宣布 SpaceX 与英伟达达成排他性安排，由英伟达为其数据中心提供芯片。",
-      "importance": 8
     },
     {
-      "title": "Jane Street 因 AI 抛售或亏损 150 亿美元",
-      "url": "https://www.ft.com/content/47dd5308-dd17-404a-a615-61046defd697?syn-25a6b1a6=1",
-      "source": "Financial Times",
-      "summary": "报道称华尔街交易公司 Jane Street 在 7 月的 AI 资产抛售中判断失误，遭受约 150 亿美元损失。",
-      "importance": 9
-    },
-    {
-      "title": "特朗普家族加密企业获有条件银行牌照",
-      "url": "https://www.ft.com/content/ace83fb4-a0cd-405a-a2c6-f6499a83e983?syn-25a6b1a6=1",
-      "source": "Financial Times",
-      "summary": "美国监管机构有条件批准特朗普家族的加密项目获取银行牌照，此举令总统在该领域的商业利益再度成为政治争议焦点。",
-      "importance": 8
-    },
-    {
-      "title": "日本买入日元或引发套息交易平仓风险",
-      "url": "https://www.economist.com/finance-and-economics/2026/08/13/when-japan-buys-yen-it-unwinds-a-dangerous-trade",
-      "source": "The Economist Finance",
-      "summary": "全球最大套息交易方日本开始退出仓位，其买入日元可能引发危险交易大幅平仓，给全球市场带来波动。",
+      "title": "谷歌推出 SL2T 手语识别模型",
+      "url": "https://deepmind.google/blog/putting-sign-language-ai-into-users-hands/",
+      "source": "DeepMind Blog",
+      "summary": "DeepMind 发布手语转文字模型 SL2T，为聋人和听障用户提供新的手语功能，将手语视频转换为文本，降低日常沟通中的信息障碍。",
       "importance": 7
     }
   ],
+  "finance_briefs": [],
   "politics_briefs": [],
   "editor_note": "",
   "keywords": [],
   "trading": {
-    "market_overview": "从技术面看，美股中 SPY、QQQ、NVDA 保持多头排列且接近 52 周高点，但 AAPL、GOOGL、TSLA、META 分化明显：TSLA 空头排列且股价低于 SMA200，META 虽有 MACD 金叉但均线仍呈空头排列，整体属于指数偏强但权重股内部分化。加密资产整体偏弱：加密恐慌贪婪指数报 29 处于恐慌区，加密总市值 2.25 万亿美元单日 -0.69%，BTC 主导率 56.1%、ETH 10.1%；BTC 呈现 MACD 死叉与空头排列，ETH、SOL 均线交织或空头排列，短期结构承压。中概方面，BABA、PDD、JD、腾讯多数价格低于 SMA200，并出现 MACD 死叉，其中 JD 5 日 -11.86%、腾讯 5 日 -8.10%，技术面偏弱。商品外汇中，原油期货 MACD 金叉且均线偏多头排列，黄金 RSI 67.3 且 5 日上涨 2.10% 动量偏强但低于 SMA200，美元指数中性偏弱，美元兑人民币 RSI 23.1 超卖。整体市场风险偏好与避险资产信号并存。",
+    "market_overview": "美股方面，SPY、QQQ、NVDA均现多头排列，价格分别距52周高0.39%、2.35%、4.81%以内，但MSFT的RSI14达70.9进入超买，GOOGL、META、TSLA等出现空头排列或MACD死叉，指数强而个股分化。加密方面，恐慌贪婪指数为29（恐慌），加密总市值2.25万亿美元、24小时下跌0.59%；BTC主导率56.1%、ETH主导率10.1%。BTC-USD现价62972.72低于20/50/200日均线且MACD死叉，SOL-USD为空头排列，ETH-USD位于50日线附近但低于200日线，加密整体偏弱。中概方面，BABA、PDD、JD、腾讯均以调整为主，JD近5日下跌11.86%，腾讯下跌8.1%，两者均为MACD死叉与空头排列，RSI14分别降至37.8和40.4；仅BABA近1日反弹1.35%，但仍受压于200日线。商品外汇方面，黄金期货近1日上涨1.57%、RSI14为67.3，价格站上20/50日线；WTI原油现价82.4高于20/50/200日均线且出现MACD金叉；美元/人民币RSI23.1超卖，美元指数DXY在99.64附近震荡。总体看，科技权重与商品偏强，加密和中概偏弱。",
     "watchlist": [
       {
         "symbol": "SPY",
-        "display_name": "S&P 500 ETF (SPY)",
+        "display_name": "标普500 ETF (SPY)",
         "stance": "偏上行",
-        "rationale": "价格 776.34 同时在 SMA20 756.20、SMA50 748.93、SMA200 705.46 之上，形成多头排列；RSI14 为 65.7，未进入超买；MACD 线 8.5146 高于信号线 6.2567，红柱延续；距 52 周高点仅 -0.39%。技术面呈现偏强的上升趋势结构。"
+        "rationale": "现价776.34站上20/50/200日均线（756.2/748.93/705.46），呈多头排列，距52周高仅0.39%。RSI14为65.7，MACD柱由8.5146与信号线6.2567维持红柱，动能偏强。近5日小幅上涨0.4%，技术结构整体偏上行。"
       },
       {
-        "symbol": "CL=F",
-        "display_name": "WTI 原油期货",
+        "symbol": "NVDA",
+        "display_name": "英伟达 (NVDA)",
         "stance": "偏上行",
-        "rationale": "价格 82.40 略低于 SMA20 82.51 但高于 SMA50 79.55 与 SMA200 76.84，均线系统仍偏多头排列；MACD 0.3173 上穿信号线 0.2000 形成金叉，RSI14 52.5 处中性偏强；5 日涨幅 5.40%、1 日涨幅 1.42%，动量偏向上行。"
+        "rationale": "现价225.16高于20/50/200日均线（210.39/206.52/194.92），多头排列，距52周高4.81%。RSI14为63，MACD 5.2773高于信号线3.2258，红柱延续。近1日微跌0.06%，但近5日上涨0.54%，短线趋势未破位，技术结构偏多头。"
       },
       {
-        "symbol": "BTC-USD",
-        "display_name": "比特币 (BTC-USD)",
+        "symbol": "USDCNY=X",
+        "display_name": "美元 / 人民币",
         "stance": "偏下行",
-        "rationale": "价格 62872.22 低于 SMA20 63938.73、SMA50 63448.71 与 SMA200 69501.06，呈空头排列；MACD -151.3435 低于信号线 -6.6239，构成死叉；RSI14 42.1 偏弱，且距 52 周高点 -50.18%，趋势指标偏空。"
+        "rationale": "现价6.73低于20/50日均线（6.76/6.77），并贴近52周低点（pct52WeekLow 0.03%）。RSI14仅23.1，处于超卖区；MACD -0.01低于信号线-0.0086，呈死叉，且空头排列。近5日微跌0.23%，下行动能与超卖状态明显，为偏下行结构。"
       },
       {
-        "symbol": "JD",
-        "display_name": "京东 (JD)",
+        "symbol": "0700.HK",
+        "display_name": "腾讯控股 (0700.HK)",
         "stance": "偏下行",
-        "rationale": "价格 29.06 已跌破 SMA20 31.57，也低于 SMA50 29.21 与 SMA200 29.38，整体趋势 bearish；MACD 0.4467 低于信号线 0.9102，形成死叉；RSI14 37.8 偏弱，5 日跌幅 -11.86%，空头压力较明显。"
+        "rationale": "现价440低于20/50/200日均线（464.94/455.32/531.32），呈空头排列。RSI14为40.4，MACD 0.3801远低于信号线4.6102，死叉延续。近5日下跌8.1%，距52周高仍有35.58%距离，短线动能与趋势均偏弱。"
       },
       {
-        "symbol": "ETH-USD",
-        "display_name": "以太坊 (ETH-USD)",
+        "symbol": "META",
+        "display_name": "Meta (META)",
         "stance": "中性",
-        "rationale": "价格 1878.18 贴近 SMA20 1892.09 但略处于其下，高于 SMA50 1824.04，低于 SMA200 2024.05，均线结构交织；RSI14 50.6 位居中轴，MACD 10.1201 低于信号线 16.1482，多空信号不突出，趋势维持中性。"
+        "rationale": "现价589.85略低于20/50/200日均线（594.67/597.13/627.63），趋势仍偏空，但MACD -5.3921上穿信号线-5.6043释放金叉信号，且近1日下跌0.86%、RSI14为47.6。多空信号混合，围绕均线纠结，暂以中性看待。"
       }
     ],
-    "risk_caveat": "本报告仅基于技术指标读数描述当前状态，过去走势不代表未来表现，仅供技术指标解读参考，不构成任何投资建议或未来价格预测。",
+    "risk_caveat": "本报告内容基于公开行情数据的技术指标计算，过去走势不代表未来表现，所有指标读数仅用于描述当前技术状态，不构成任何投资建议或收益承诺。请读者知悉，具体交易决策需结合自身风险承受能力，本内容仅供技术指标解读参考。",
     "tickers": [
       {
         "symbol": "SPY",
@@ -338,18 +309,18 @@
         "group": "crypto",
         "currency": "USD",
         "exchangeName": "CCC",
-        "currentPrice": 62872.22,
-        "pct1Day": -0.8358576044442465,
-        "pct5Day": -3.0421314903455587,
-        "pct52WeekHigh": -50.17972937304034,
-        "pct52WeekLow": 8.873856696032185,
-        "sma20": 63938.7310546875,
-        "sma50": 63448.710390625,
-        "sma200": 69501.06419921874,
-        "rsi14": 42.10951749912196,
-        "macd": -151.34347560703463,
-        "macdSignal": -6.623915796782541,
-        "macdHistogram": -144.7195598102521,
+        "currentPrice": 62972.72,
+        "pct1Day": -0.6773456843823599,
+        "pct5Day": -2.8871462554481706,
+        "pct52WeekHigh": -50.10009265593365,
+        "pct52WeekLow": 9.047889402336356,
+        "sma20": 63943.7560546875,
+        "sma50": 63450.720390625,
+        "sma200": 69501.56669921875,
+        "rsi14": 42.69484394777866,
+        "macd": -143.32638158994087,
+        "macdSignal": -5.020496993363793,
+        "macdHistogram": -138.30588459657707,
         "trend": "bearish",
         "rsiState": "normal",
         "signals": [
@@ -370,18 +341,18 @@
         "group": "crypto",
         "currency": "USD",
         "exchangeName": "CCC",
-        "currentPrice": 1878.18,
-        "pct1Day": -0.3084585850262156,
-        "pct5Day": -1.5981042124199942,
-        "pct52WeekHigh": -62.085562544448806,
-        "pct52WeekLow": 24.67128401837445,
-        "sma20": 1892.0915222167969,
-        "sma50": 1824.0368090820311,
-        "sma200": 2024.0527307128907,
-        "rsi14": 50.57332731905297,
-        "macd": 10.120137160849481,
-        "macdSignal": 16.148210795180425,
-        "macdHistogram": -6.028073634330944,
+        "currentPrice": 1880.19,
+        "pct1Day": -0.20177019613692046,
+        "pct5Day": -1.4927959828929867,
+        "pct52WeekHigh": -62.044987083478254,
+        "pct52WeekLow": 24.80470535225988,
+        "sma20": 1892.1920166015625,
+        "sma50": 1824.0770068359375,
+        "sma200": 2024.0627801513672,
+        "rsi14": 50.92776922635512,
+        "macd": 10.280470082412876,
+        "macdSignal": 16.180277379493106,
+        "macdHistogram": -5.89980729708023,
         "trend": "neutral",
         "rsiState": "normal",
         "signals": []
@@ -392,18 +363,18 @@
         "group": "crypto",
         "currency": "USD",
         "exchangeName": "CCC",
-        "currentPrice": 75.2,
-        "pct1Day": -1.2829571282662642,
-        "pct5Day": -1.328040190300074,
-        "pct52WeekHigh": -70.30131918222787,
-        "pct52WeekLow": 24.472976122375474,
-        "sma20": 74.46062927246093,
-        "sma50": 75.8949169921875,
-        "sma200": 82.2912222290039,
-        "rsi14": 50.4815001809459,
-        "macd": 0.10324504956352598,
-        "macdSignal": -0.16550897318440172,
-        "macdHistogram": 0.2687540227479277,
+        "currentPrice": 75.3,
+        "pct1Day": -1.1516844648730085,
+        "pct5Day": -1.1968274777871828,
+        "pct52WeekHigh": -70.26182625560848,
+        "pct52WeekLow": 24.638498697006284,
+        "sma20": 74.46562957763672,
+        "sma50": 75.89691711425782,
+        "sma200": 82.29172225952148,
+        "rsi14": 50.87060023286701,
+        "macd": 0.11122274443086155,
+        "macdSignal": -0.1639134342109346,
+        "macdHistogram": 0.2751361786417962,
         "trend": "bearish",
         "rsiState": "normal",
         "signals": [
@@ -715,13 +686,13 @@
       "timestamp": "2026-08-14T00:00:00.000Z"
     },
     "crypto_global": {
-      "totalMarketCapUsd": 2248897449533.412,
-      "total24hVolumeUsd": 47914806306.95822,
-      "marketCapChangePct24h": -0.6925171424917349,
-      "btcDominance": 56.119934469396725,
-      "ethDominance": 10.083438246154387,
+      "totalMarketCapUsd": 2251296294816.13,
+      "total24hVolumeUsd": 47832893218.76944,
+      "marketCapChangePct24h": -0.5865882185913777,
+      "btcDominance": 56.14181425245467,
+      "ethDominance": 10.073656587919896,
       "activeCryptocurrencies": 18412
     },
-    "generated_at": "2026-08-14T23:35:28.660Z"
+    "generated_at": "2026-08-14T23:57:27.301Z"
   }
 }
